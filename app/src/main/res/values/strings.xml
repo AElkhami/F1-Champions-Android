@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">F1 Champions</string>
+    <string name="label_season">Season</string>
+    <string name="label_champion">Champion</string>
+    <string name="label_constructor">Constructor</string>
+    <string name="label_winner">Winner</string>
+
+    //Content description
+    <string name="cd_back">Back</string>
+</resources>
