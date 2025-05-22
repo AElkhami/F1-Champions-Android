@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -39,6 +40,10 @@ fun ChampionsScreen(
     viewModel: ChampionsViewModel = hiltViewModel(),
     onSeasonClick: (String) -> Unit
 ) {
+    LaunchedEffect(true) {
+        viewModel.loadChampions()
+    }
+
     ChampionsScreenContent(
         uiState = viewModel.uiState,
         onSeasonClick = onSeasonClick
@@ -53,7 +58,7 @@ fun ChampionsScreenContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("F1 World Champions") })
+            TopAppBar(title = { Text(stringResource(id = R.string.app_name)) })
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {

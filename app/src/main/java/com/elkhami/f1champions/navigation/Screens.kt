@@ -1,4 +1,4 @@
-package com.elkhami.f1champions
+package com.elkhami.f1champions.navigation
 
 /**
  * Created by A.Elkhami on 22/05/2025.

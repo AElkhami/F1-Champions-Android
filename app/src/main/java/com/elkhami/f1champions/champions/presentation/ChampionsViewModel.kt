@@ -4,7 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.elkhami.f1champions.champions.domain.ChampionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -13,9 +16,38 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChampionsViewModel @Inject constructor(
+    private val repository: ChampionRepository
 ) : ViewModel() {
 
     var uiState by mutableStateOf(ChampionsUiState())
         private set
 
+    fun loadChampions() {
+        // Prevent reloading if already loaded
+        if (uiState.champions.isNotEmpty() || uiState.isLoading) return
+
+        viewModelScope.launch {
+            uiState = uiState.copy(isLoading = true)
+
+            try {
+                val champions = repository.getChampions()
+                uiState = uiState.copy(
+                    champions = champions.map {
+                        ChampionItemUiState(
+                            season = it.season,
+                            driver = it.driverName,
+                            constructor = it.constructor,
+                            title = ""
+                        )
+                    },
+                    isLoading = false
+                )
+            } catch (e: Exception) {
+                uiState = uiState.copy(
+                    isLoading = false,
+                    errorMessage = e.message ?: "Unexpected error"
+                )
+            }
+        }
+    }
 }

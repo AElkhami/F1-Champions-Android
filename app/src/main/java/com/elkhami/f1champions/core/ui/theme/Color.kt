@@ -1,4 +1,4 @@
-package com.elkhami.f1champions.ui.theme
+package com.elkhami.f1champions.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -6,7 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.elkhami.f1champions.ui.theme.F1ChampionsTheme
+import com.elkhami.f1champions.core.ui.theme.F1ChampionsTheme
+import com.elkhami.f1champions.navigation.F1AppNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

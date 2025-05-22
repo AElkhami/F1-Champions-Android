@@ -1,4 +1,4 @@
-package com.elkhami.f1champions
+package com.elkhami.f1champions.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
