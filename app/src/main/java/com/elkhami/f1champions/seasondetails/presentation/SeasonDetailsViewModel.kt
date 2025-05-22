@@ -4,7 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.elkhami.f1champions.seasondetails.domain.SeasonDetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -12,9 +15,44 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class SeasonDetailsViewModel @Inject constructor(
+    private val repository: SeasonDetailsRepository
 ) : ViewModel() {
 
     var uiState by mutableStateOf(SeasonDetailsUiState())
         private set
 
+    fun loadSeason(season: String) {
+        if (uiState.races.isNotEmpty() || uiState.isLoading) return
+
+        viewModelScope.launch {
+            uiState = uiState.copy(isLoading = true, errorMessage = null)
+
+            try {
+                val results = repository.getRaceResults(season)
+
+                val raceItems = results.map {
+                    RaceItemUiState(
+                        round = it.round,
+                        raceName = it.raceName,
+                        date = it.date,
+                        winnerName = it.winner,
+                        constructorName = it.constructor
+                    )
+                }
+
+                uiState = uiState.copy(
+                    isLoading = false,
+                    races = raceItems,
+                    seasonTitle = "Season $season"
+                )
+
+            } catch (e: Exception) {
+                uiState = uiState.copy(
+                    isLoading = false,
+                    errorMessage = e.message ?: "Unexpected error"
+                )
+            }
+        }
+    }
 }
+

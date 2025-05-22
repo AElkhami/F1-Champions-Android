@@ -4,6 +4,7 @@
     <string name="label_champion">Champion</string>
     <string name="label_constructor">Constructor</string>
     <string name="label_winner">Winner</string>
+    <string name="label_round">Round</string>
 
     //Content description
     <string name="cd_back">Back</string>

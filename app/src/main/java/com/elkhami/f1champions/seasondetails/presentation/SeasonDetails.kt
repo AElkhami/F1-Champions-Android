@@ -12,9 +12,9 @@ data class SeasonDetailsUiState(
 )
 
 data class RaceItemUiState(
-    val roundText: String,
+    val round: String,
     val raceName: String,
-    val dateText: String,
+    val date: String,
     val winnerName: String,
     val constructorName: String
 )
