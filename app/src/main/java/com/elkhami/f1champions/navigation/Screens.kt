@@ -6,7 +6,7 @@ package com.elkhami.f1champions.navigation
 
 sealed class Screen(val route: String) {
     data object Champions : Screen("champions")
-    data object SeasonDetails : Screen("season_details/{season}") {
-        fun createRoute(season: String) = "season_details/$season"
+    data object SeasonDetails : Screen("season_details/{season}/{championName}") {
+        fun createRoute(season: String, championName: String) = "season_details/$season/$championName"
     }
 }

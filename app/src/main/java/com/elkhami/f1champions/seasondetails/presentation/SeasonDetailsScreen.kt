@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +48,7 @@ import com.elkhami.f1champions.core.ui.theme.LocalDimens
 @Composable
 fun SeasonDetailsScreen(
     season: String,
+    championName: String,
     onBackClick: () -> Unit,
     viewModel: SeasonDetailsViewModel = hiltViewModel()
 ) {
@@ -56,6 +58,7 @@ fun SeasonDetailsScreen(
 
     SeasonDetailsScreenContents(
         uiState = viewModel.uiState,
+        championName = championName,
         onBackClick = onBackClick
     )
 }
@@ -64,6 +67,7 @@ fun SeasonDetailsScreen(
 @Composable
 fun SeasonDetailsScreenContents(
     uiState: SeasonDetailsUiState,
+    championName: String,
     onBackClick: () -> Unit,
 ) {
     Scaffold(
@@ -83,9 +87,11 @@ fun SeasonDetailsScreenContents(
     ) { innerPadding ->
         val dimens = LocalDimens.current
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
             when {
                 uiState.isLoading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -109,7 +115,7 @@ fun SeasonDetailsScreenContents(
                             items = uiState.races,
                             key = { it.round } // use unique roundText
                         ) { race ->
-                            RaceItem(item = race)
+                            RaceItem(item = race, championName = championName)
                         }
                     }
                 }
@@ -119,18 +125,21 @@ fun SeasonDetailsScreenContents(
 }
 
 @Composable
-fun RaceItem(item: RaceItemUiState) {
+fun RaceItem(item: RaceItemUiState, championName: String) {
     val dimens = LocalDimens.current
 
     val roundLabel = stringResource(id = R.string.label_round)
     val winnerLabel = stringResource(id = R.string.label_winner)
     val constructorLabel = stringResource(id = R.string.label_constructor)
 
+    val isChampion = item.winnerName == championName
+
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .border(
                 width = dimens.borderWidth,
-                color = F1Red,
+                color = if (isChampion) F1Red else Color.Gray,
                 shape = RoundedCornerShape(dimens.medium)
             ),
         shape = RoundedCornerShape(dimens.medium),
@@ -166,7 +175,8 @@ fun RaceItem(item: RaceItemUiState) {
                 Spacer(modifier = Modifier.height(dimens.small))
                 Text(
                     text = "$winnerLabel: ${item.winnerName}",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = if (isChampion) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
+                    color = if (isChampion) F1Red else Color.Gray
                 )
                 Text(
                     text = "$constructorLabel: ${item.constructorName}",
@@ -211,6 +221,7 @@ fun SeasonDetailsScreenPreview() {
 
     SeasonDetailsScreenContents(
         uiState = previewState,
-        onBackClick = {}
+        onBackClick = {},
+        championName = "Max Verstappen"
     )
 }

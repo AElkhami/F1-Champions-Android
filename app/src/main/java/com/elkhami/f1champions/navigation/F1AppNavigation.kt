@@ -23,8 +23,8 @@ fun F1AppNavigation() {
     ) {
         composable(Screen.Champions.route) {
             ChampionsScreen(
-                onSeasonClick = { season ->
-                    navController.navigate(Screen.SeasonDetails.createRoute(season))
+                onSeasonClick = { season, championName ->
+                    navController.navigate(Screen.SeasonDetails.createRoute(season, championName))
                 }
             )
         }
@@ -34,8 +34,10 @@ fun F1AppNavigation() {
             arguments = listOf(navArgument("season") { type = NavType.StringType })
         ) { entry ->
             val season = entry.arguments?.getString("season") ?: return@composable
+            val championName = entry.arguments?.getString("championName") ?: return@composable
             SeasonDetailsScreen(
                 season = season,
+                championName = championName,
                 onBackClick = { navController.popBackStack() }
             )
         }

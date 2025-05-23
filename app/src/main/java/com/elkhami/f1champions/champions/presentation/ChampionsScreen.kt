@@ -51,7 +51,7 @@ import com.elkhami.f1champions.core.ui.theme.LocalDimens
 @Composable
 fun ChampionsScreen(
     viewModel: ChampionsViewModel = hiltViewModel(),
-    onSeasonClick: (String) -> Unit
+    onSeasonClick: (String, String) -> Unit
 ) {
     LaunchedEffect(true) {
         viewModel.loadChampions()
@@ -68,7 +68,7 @@ fun ChampionsScreen(
 @Composable
 fun ChampionsScreenContent(
     uiState: ChampionsUiState,
-    onSeasonClick: (String) -> Unit,
+    onSeasonClick: (String, String) -> Unit,
     onRefresh: () -> Unit
 ) {
     val context = LocalContext.current
@@ -145,7 +145,12 @@ fun ChampionsScreenContent(
                                 items(uiState.champions, key = { it.season }) { champion ->
                                     ChampionItem(
                                         item = champion,
-                                        onClick = { onSeasonClick(champion.season) }
+                                        onClick = {
+                                            onSeasonClick(
+                                                champion.season,
+                                                champion.driver
+                                            )
+                                        }
                                     )
                                 }
                             }
@@ -247,7 +252,7 @@ fun ChampionsScreenPreview() {
 
     ChampionsScreenContent(
         uiState = previewState,
-        onSeasonClick = {},
+        onSeasonClick = { _, _ -> },
         onRefresh = {}
     )
 }
