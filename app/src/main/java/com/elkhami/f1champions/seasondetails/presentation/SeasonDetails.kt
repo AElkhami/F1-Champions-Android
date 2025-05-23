@@ -1,5 +1,7 @@
 package com.elkhami.f1champions.seasondetails.presentation
 
+import com.elkhami.f1champions.core.result.AppError
+
 /**
  * Created by A.Elkhami on 22/05/2025.
  */
@@ -7,7 +9,7 @@ package com.elkhami.f1champions.seasondetails.presentation
 data class SeasonDetailsUiState(
     val isLoading: Boolean = false,
     val races: List<RaceItemUiState> = emptyList(),
-    val errorMessage: String? = null,
+    val error: AppError? = null,
     val seasonTitle: String = ""
 )
 

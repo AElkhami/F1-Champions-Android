@@ -1,11 +1,13 @@
 package com.elkhami.f1champions.seasondetails.presentation
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.elkhami.f1champions.R
+import com.elkhami.f1champions.core.ui.theme.F1Red
 import com.elkhami.f1champions.core.ui.theme.LocalDimens
 
 /**
@@ -62,15 +65,17 @@ fun SeasonDetailsScreen(
 fun SeasonDetailsScreenContents(
     uiState: SeasonDetailsUiState,
     onBackClick: () -> Unit,
-){
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(uiState.seasonTitle) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack
-                            , contentDescription = stringResource(id = R.string.cd_back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.cd_back)
+                        )
                     }
                 }
             )
@@ -78,15 +83,17 @@ fun SeasonDetailsScreenContents(
     ) { innerPadding ->
         val dimens = LocalDimens.current
 
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)) {
             when {
                 uiState.isLoading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
 
-                uiState.errorMessage != null -> {
+                uiState.error != null -> {
                     Text(
-                        text = uiState.errorMessage,
+                        text = uiState.error.toUiText().asString(),
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.align(Alignment.Center),
                         textAlign = TextAlign.Center
@@ -110,6 +117,7 @@ fun SeasonDetailsScreenContents(
         }
     }
 }
+
 @Composable
 fun RaceItem(item: RaceItemUiState) {
     val dimens = LocalDimens.current
@@ -119,7 +127,12 @@ fun RaceItem(item: RaceItemUiState) {
     val constructorLabel = stringResource(id = R.string.label_constructor)
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .border(
+                width = dimens.borderWidth,
+                color = F1Red,
+                shape = RoundedCornerShape(dimens.medium)
+            ),
         shape = RoundedCornerShape(dimens.medium),
         elevation = CardDefaults.cardElevation(defaultElevation = dimens.xSmall),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -140,7 +153,10 @@ fun RaceItem(item: RaceItemUiState) {
                     .size(dimens.flagIconSize)
             )
             Column(modifier = Modifier.padding(dimens.small)) {
-                Text(text = "$roundLabel: ${item.round}", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = "$roundLabel: ${item.round}",
+                    style = MaterialTheme.typography.titleSmall
+                )
                 Text(text = item.raceName, style = MaterialTheme.typography.titleMedium)
                 Text(
                     text = item.date,
@@ -160,7 +176,6 @@ fun RaceItem(item: RaceItemUiState) {
         }
     }
 }
-
 
 
 @Preview(showBackground = true)

@@ -1,5 +1,7 @@
 package com.elkhami.f1champions.seasondetails.data.repository
 
+import com.elkhami.f1champions.core.result.Result
+import com.elkhami.f1champions.core.result.safeCall
 import com.elkhami.f1champions.seasondetails.data.mapper.toSeasonRaceResult
 import com.elkhami.f1champions.seasondetails.data.remote.SeasonDetailsService
 import com.elkhami.f1champions.seasondetails.domain.SeasonDetailsRepository
@@ -13,7 +15,9 @@ class RemoteSeasonDetailsRepository @Inject constructor(
     private val api: SeasonDetailsService
 ) : SeasonDetailsRepository {
 
-    override suspend fun getRaceResults(season: String): List<SeasonRaceResult> {
-        return api.getRaceResults(season).map { it.toSeasonRaceResult() }
+    override suspend fun getRaceResults(season: String): Result<List<SeasonRaceResult>> {
+        return safeCall {
+            api.getRaceResults(season).map { it.toSeasonRaceResult() }
+        }
     }
 }

@@ -6,6 +6,11 @@
     <string name="label_winner">Winner</string>
     <string name="label_round">Round</string>
 
+    //Errors
+    <string name="error_network">Please check your internet connection.</string>
+    <string name="error_http">Server error (code %1$d).</string>
+    <string name="error_unknown">An unexpected error occurred.</string>
+
     //Content description
     <string name="cd_back">Back</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.elkhami.f1champions.champions.presentation
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,19 +23,25 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.elkhami.f1champions.R
+import com.elkhami.f1champions.core.ui.theme.F1Red
 import com.elkhami.f1champions.core.ui.theme.LocalDimens
 
 /**
@@ -51,7 +59,8 @@ fun ChampionsScreen(
 
     ChampionsScreenContent(
         uiState = viewModel.uiState,
-        onSeasonClick = onSeasonClick
+        onSeasonClick = onSeasonClick,
+        onRefresh = { viewModel.refreshChampions() }
     )
 }
 
@@ -59,14 +68,26 @@ fun ChampionsScreen(
 @Composable
 fun ChampionsScreenContent(
     uiState: ChampionsUiState,
-    onSeasonClick: (String) -> Unit
+    onSeasonClick: (String) -> Unit,
+    onRefresh: () -> Unit
 ) {
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.error) {
+        if (uiState.error != null && uiState.champions.isNotEmpty()) {
+            snackbarHostState.showSnackbar(uiState.error.toUiText().asString(context))
+        }
+    }
+
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(title = {
                 Icon(
                     painter = painterResource(R.drawable.ic_f1),
-                    tint = Color.Red,
+                    tint = F1Red,
                     contentDescription = null
                 )
             })
@@ -74,37 +95,64 @@ fun ChampionsScreenContent(
     ) { innerPadding ->
         val dimens = LocalDimens.current
 
-        Box(modifier = Modifier.padding(innerPadding)) {
-            when {
-                uiState.isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
+        val pullToRefreshState = rememberPullToRefreshState()
 
-                uiState.errorMessage != null -> {
-                    Text(
-                        text = uiState.errorMessage,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.Center),
-                        textAlign = TextAlign.Center
-                    )
-                }
+        PullToRefreshBox(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            state = pullToRefreshState,
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = onRefresh
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                when {
+                    uiState.isLoading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
 
-                else -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(dimens.medium),
-                        verticalArrangement = Arrangement.spacedBy(dimens.verticalSpace)
-                    ) {
-                        items(
-                            items = uiState.champions,
-                            key = { it.season }
-                        ) { champion ->
-                            ChampionItem(
-                                item = champion,
-                                onClick = { onSeasonClick(champion.season) }
-                            )
+                    else -> {
+                        LazyColumn(
+                            contentPadding = PaddingValues(dimens.medium),
+                            verticalArrangement = Arrangement.spacedBy(dimens.verticalSpace),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            if (uiState.champions.isEmpty()) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillParentMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (uiState.error != null) {
+                                            Text(
+                                                text = uiState.error.toUiText().asString(),
+                                                color = MaterialTheme.colorScheme.error,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        } else {
+                                            Text(
+                                                text = stringResource(R.string.error_unknown),
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+                                }
+                            } else {
+                                items(uiState.champions, key = { it.season }) { champion ->
+                                    ChampionItem(
+                                        item = champion,
+                                        onClick = { onSeasonClick(champion.season) }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+
             }
         }
     }
@@ -123,6 +171,11 @@ fun ChampionItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .border(
+                width = dimens.borderWidth,
+                color = F1Red,
+                shape = RoundedCornerShape(dimens.medium)
+            )
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(dimens.medium),
         elevation = CardDefaults.cardElevation(defaultElevation = dimens.elevation),
@@ -194,7 +247,8 @@ fun ChampionsScreenPreview() {
 
     ChampionsScreenContent(
         uiState = previewState,
-        onSeasonClick = {}
+        onSeasonClick = {},
+        onRefresh = {}
     )
 }
 

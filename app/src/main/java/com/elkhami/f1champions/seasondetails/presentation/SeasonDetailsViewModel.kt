@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.elkhami.f1champions.core.result.Result
 import com.elkhami.f1champions.seasondetails.domain.SeasonDetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -25,32 +26,32 @@ class SeasonDetailsViewModel @Inject constructor(
         if (uiState.races.isNotEmpty() || uiState.isLoading) return
 
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true, errorMessage = null)
+            uiState = uiState.copy(isLoading = true, error = null)
 
-            try {
-                val results = repository.getRaceResults(season)
-
-                val raceItems = results.map {
-                    RaceItemUiState(
-                        round = it.round,
-                        raceName = it.raceName,
-                        date = it.date,
-                        winnerName = it.winner,
-                        constructorName = it.constructor
+            when (val result = repository.getRaceResults(season)){
+                is Result.Error -> {
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        error = result.error
                     )
                 }
+                is Result.Success -> {
+                    val raceItems = result.data.map {
+                        RaceItemUiState(
+                            round = it.round,
+                            raceName = it.raceName,
+                            date = it.date,
+                            winnerName = it.winner,
+                            constructorName = it.constructor
+                        )
+                    }
 
-                uiState = uiState.copy(
-                    isLoading = false,
-                    races = raceItems,
-                    seasonTitle = "Season $season"
-                )
-
-            } catch (e: Exception) {
-                uiState = uiState.copy(
-                    isLoading = false,
-                    errorMessage = e.message ?: "Unexpected error"
-                )
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        races = raceItems,
+                        seasonTitle = "Season $season"
+                    )
+                }
             }
         }
     }

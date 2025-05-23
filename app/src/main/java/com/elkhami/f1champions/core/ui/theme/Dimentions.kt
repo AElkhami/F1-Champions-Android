@@ -20,7 +20,9 @@ data class Dimens(
     val f1IconSize: Dp = 72.dp,
     val flagIconSize: Dp = 120.dp,
     val cardCorner: Dp = 16.dp,
-    val elevation: Dp = 4.dp
+    val elevation: Dp = 4.dp,
+
+    val borderWidth: Dp = 1.dp,
 )
 
 val LocalDimens = staticCompositionLocalOf { Dimens() }

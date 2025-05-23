@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elkhami.f1champions.champions.domain.ChampionRepository
+import com.elkhami.f1champions.core.result.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,25 +30,58 @@ class ChampionsViewModel @Inject constructor(
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true)
 
-            try {
-                val champions = repository.getChampions()
-                uiState = uiState.copy(
-                    champions = champions.map {
-                        ChampionItemUiState(
-                            season = it.season,
-                            driver = it.driverName,
-                            constructor = it.constructor,
-                            title = ""
-                        )
-                    },
-                    isLoading = false
-                )
-            } catch (e: Exception) {
-                uiState = uiState.copy(
-                    isLoading = false,
-                    errorMessage = e.message ?: "Unexpected error"
-                )
+            when(val result = repository.getChampions()){
+                is Result.Error -> {
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        error = result.error
+                    )
+                }
+                is Result.Success -> {
+                    uiState = uiState.copy(
+                        champions = result.data.map {
+                            ChampionItemUiState(
+                                season = it.season,
+                                driver = it.driverName,
+                                constructor = it.constructor,
+                                title = ""
+                            )
+                        },
+                        isLoading = false
+                    )
+                }
             }
         }
     }
+
+    fun refreshChampions() {
+        viewModelScope.launch {
+            uiState = uiState.copy(isRefreshing = true)
+
+            when (val result = repository.getChampions()) {
+                is Result.Error -> {
+                    uiState = uiState.copy(
+                        isRefreshing = false,
+                        error = result.error
+                    )
+                }
+
+                is Result.Success -> {
+                    uiState = uiState.copy(
+                        champions = result.data.map {
+                            ChampionItemUiState(
+                                season = it.season,
+                                driver = it.driverName,
+                                constructor = it.constructor,
+                                title = ""
+                            )
+                        },
+                        isRefreshing = false,
+                        error = null
+                    )
+                }
+            }
+        }
+    }
+
 }
