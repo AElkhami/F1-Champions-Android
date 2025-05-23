@@ -1,4 +1,4 @@
-package com.elkhami.f1champions.core.result
+package com.elkhami.f1champions.core.network
 
 import com.elkhami.f1champions.R
 import com.elkhami.f1champions.core.ui.UiText

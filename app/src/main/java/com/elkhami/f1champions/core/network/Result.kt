@@ -1,4 +1,4 @@
-package com.elkhami.f1champions.core.result
+package com.elkhami.f1champions.core.network
 
 /**
  * Created by A.Elkhami on 23/05/2025.

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.elkhami.f1champions.core.result.Result
+import com.elkhami.f1champions.core.network.Result
 import com.elkhami.f1champions.seasondetails.domain.SeasonDetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

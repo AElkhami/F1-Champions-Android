@@ -1,7 +1,7 @@
 package com.elkhami.f1champions.seasondetails.data.repository
 
-import com.elkhami.f1champions.core.result.Result
-import com.elkhami.f1champions.core.result.safeCall
+import com.elkhami.f1champions.core.network.Result
+import com.elkhami.f1champions.core.network.safeCall
 import com.elkhami.f1champions.seasondetails.data.mapper.toSeasonRaceResult
 import com.elkhami.f1champions.seasondetails.data.remote.SeasonDetailsService
 import com.elkhami.f1champions.seasondetails.domain.SeasonDetailsRepository

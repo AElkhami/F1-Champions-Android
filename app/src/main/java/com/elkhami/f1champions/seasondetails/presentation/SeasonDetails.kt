@@ -1,6 +1,6 @@
 package com.elkhami.f1champions.seasondetails.presentation
 
-import com.elkhami.f1champions.core.result.AppError
+import com.elkhami.f1champions.core.network.AppError
 
 /**
  * Created by A.Elkhami on 22/05/2025.

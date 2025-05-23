@@ -1,6 +1,6 @@
 package com.elkhami.f1champions.champions.domain
 
-import com.elkhami.f1champions.core.result.Result
+import com.elkhami.f1champions.core.network.Result
 
 /**
  * Created by A.Elkhami on 22/05/2025.
