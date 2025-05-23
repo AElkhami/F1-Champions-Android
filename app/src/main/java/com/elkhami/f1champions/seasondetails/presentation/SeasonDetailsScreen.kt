@@ -156,7 +156,7 @@ fun RaceItem(item: RaceItemUiState, championName: String) {
             Icon(
                 painter = painterResource(R.drawable.ic_checkered_flag),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                tint = if(isChampion) F1Red else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .size(dimens.flagIconSize)
