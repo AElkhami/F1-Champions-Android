@@ -8,7 +8,7 @@
 
     //Errors
     <string name="error_network">Please check your internet connection.</string>
-    <string name="error_http">Server error (code %1$d).</string>
+    <string name="error_http">Server error (code %1$s).</string>
     <string name="error_unknown">An unexpected error occurred.</string>
 
     //Content description
